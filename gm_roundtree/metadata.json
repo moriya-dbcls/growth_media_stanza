@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gm_roundtree",
+  "stanza:label": "GM clustering tree",
+  "stanza:definition": "Greeting.",
+  "stanza:parameter": [
+     {
+       "stanza:key": "newick",
+       "stanza:example": "http://keggoc-rdf.dbcls.jp/tmp/exported_tree.newick",
+       "stanza:description": "newick tree format",
+       "stanza:required": true
+     }
+  ],
+  "stanza:usage": "<togostanza-gm_roundtree newick='http://keggoc-rdf.dbcls.jp/tmp/exported_tree.newick'></togostanza-gm_roundtree>",
+  "stanza:type": "Stanza",
+  "stanza:context": "",
+  "stanza:display": "",
+  "stanza:provider": "provider of this stanza",
+  "stanza:license": "",
+  "stanza:author": "author name",
+  "stanza:address": "name@example.org",
+  "stanza:contributor": [
+  ],
+  "stanza:created": "2019-09-02",
+  "stanza:updated": "2019-09-02"
+}

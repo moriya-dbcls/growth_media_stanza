@@ -1,0 +1,92 @@
+
+ <!--  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">  -->
+  <style type="text/css">
+
+    /* 'entypo' https://weloveiconfonts.com/ */
+    @import url(https://weloveiconfonts.com/api/?family=entypo);
+    [class*="entypo-"]:before {
+       font-family: 'entypo', sans-serif;
+    }
+
+    .thead {
+      border-bottom-style: inset;
+    }
+    .header {
+      padding-right: 20px;
+      padding: 10px 10px 10px 10px;
+    }
+    .organism {
+      padding: 4px 10px 4px 2px;
+    }
+    .medium {
+      padding: 8px 20px 2px 2px;
+    }
+    .component {
+      padding: 8px 2px 2px 2px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .role_component_style {
+      color: #4ea0c9;
+    }
+    .component_style {
+      color: #48d1cc;
+    }
+    div#popup {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+  </style>
+
+<div id="table_area"></div>
+
+<!--
+<table>
+  <thead class="thead">
+    <tr>
+      {{#each result.head}}
+      <th class="header" colspan="{{cols}}" rowspan="{{rows}}">{{text}}</th>
+      {{/each}}
+    </tr>
+    <tr>
+      {{#each result.subHead}}
+      <th>
+       <a href="http://ep.dbcls.jp/sparqlist/api/gmo_component?gmo_id={{gmo_id}}">
+        <svg class="bd-placeholder-img rounded-circle" width="15" height="15" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Completely round image: 75x75"><title>Completely round image</title><rect width="100%" height="100%" fill="{{color}}" /><text x="50%" y="50%" fill="{{color}}" dy=".1em" >-</text></svg>
+        </a>
+      </th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+    {{#each result.body}}
+      <td class="organism" rowspan="{{rows}}">
+        <a href="https://www.kegg.jp/entry/{{organism}}">{{organism}}</a>
+      </td>
+      {{#each gm}}
+      <td class="medium">
+        <a href="http://ep.dbcls.jp/sparqlist/api/growth_medium?gm_id={{label}}">
+          {{label}}
+        </a>
+      </td>
+      {{#each exist}}
+      <td class="component">
+        <a href="http://ep.dbcls.jp/sparqlist/api/gmo_component?gmo_id={{gmo_id}}">
+        <svg class="bd-placeholder-img rounded-circle" width="15" height="15" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Completely round image: 75x75"><title>{{gmo_label}}</title><rect width="100%" height="100%" fill="{{color}}" /><text x="50%" y="50%" fill="{{color}}" dy=".1em" >-</text></svg>
+        </a>
+      </td>
+      {{/each}}
+    </tr><tr>
+      {{/each}}
+    {{/each}}
+    </tr>
+  </tbody>
+-->
+
+</table>
+
