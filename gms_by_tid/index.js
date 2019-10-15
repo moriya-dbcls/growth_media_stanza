@@ -19,7 +19,7 @@ Stanza(function(stanza, params) {
     };
     
     let apiUrl = "http://ep.dbcls.jp/sparqlist/api/";
-    let apiName = "gms_by_kegg_tids";
+    let apiName = "gms_by_kegg_tids_2";
     let q = fetch(apiUrl + apiName, options).then(res => res.json());
     
     q.then(function(json) {

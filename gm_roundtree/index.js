@@ -8,18 +8,13 @@ Stanza(function(stanza, params) {
         mode:  "cors"
     };
 
-    // 'kegg_code - kegg_T_num' SPARQL
-    let formBody = ["query=" + encodeURIComponent("PREFIX kegg_gold: <http://togodb.org/ontology/kegg_gold#> SELECT DISTINCT ?code ?tnum WHERE{ ?tnum ^kegg_gold:kegg_t/kegg_gold:col2 ?code .}")];
+    // 'kegg_code - kegg_T_num' SPARQList via KEGG API
+    //  将来的にはTogoDB "http://dev.togodb.org/sparql/kegg_gold" を使う？今はSPARQL endpointに不具合あり。遅い。
+    let code_tid_api = "http://keggoc-rdf.dbcls.jp/rest/api/kegg_code_to_tid";
     
-    // let endpoint = "http://dev.togodb.org/sparql/kegg_gold";
-    // not allowed 'Access-Control-Allow-Origin' respons header in TogoDB endpoint. Proxy by sparql-support API
-    let endpoint = "https://sparql-support.dbcls.jp/api/relay";
-    formBody.push("endpoint=" + encodeURIComponent("http://dev.togodb.org/sparql/kegg_gold"));
-    
-    let options_togodb = {
+    let options_json = {
         method: "POST",
         mode:  "cors",
-        body: formBody.join("&"),
         headers: {
             "Accept": "application/json",
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -27,15 +22,10 @@ Stanza(function(stanza, params) {
     };
 
     // get 'newick format tree' & 'kegg_code - kegg_T_num table'
-    let q = Promise.all([fetch(newick_url, options_text).then(res => res.text()), fetch(endpoint, options_togodb).then(res => res.json())]);
+    let q = Promise.all([fetch(newick_url, options_text).then(res => res.text()), fetch(code_tid_api, options_json).then(res => res.json())]);
 
-    q.then(function([newick, code_tnum]){
-
-	let code2tnum = {};
-	for(let i = 0; i < code_tnum.results.bindings.length; i++){
-	    code2tnum[code_tnum.results.bindings[i].code.value] = code_tnum.results.bindings[i].tnum.value.replace("gn:", "");
-	}
-
+    q.then(function([newick, code2tnum]){
+		
 	// make branch node ID
 	newick = newick.replace(/\n/g, "");
 	if(newick.match(/\):/)){
@@ -161,7 +151,7 @@ Stanza(function(stanza, params) {
 	    .on("click", function(d){
 		let tax = d.data.leaf_list.join(",");
 		let gm_stanza = d3.select(stanza.select("#gm_stanza")).html("");
-		gm_stanza.append("togostanza-gms_by_tid")
+		gm_stanza.append("togostanza-gms_by_tid_3")
 		    .attr("t_id", tax);
 	    })
 	    .on("mouseover", function(d){ svg.select("#" + d.data.name).style("stroke", "#89ffff"); })

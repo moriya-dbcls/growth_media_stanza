@@ -8,12 +8,12 @@
   "stanza:parameter": [
      {
        "stanza:key": "newick",
-       "stanza:example": "http://keggoc-rdf.dbcls.jp/tmp/exported_tree.newick",
+       "stanza:example": "http://keggoc-rdf.dbcls.jp/tmp/phylo2.newick",
        "stanza:description": "newick tree format",
        "stanza:required": true
      }
   ],
-  "stanza:usage": "<togostanza-gm_roundtree newick='http://keggoc-rdf.dbcls.jp/tmp/exported_tree.newick'></togostanza-gm_roundtree>",
+  "stanza:usage": "<togostanza-gm_roundtree newick='http://keggoc-rdf.dbcls.jp/tmp/phylo2.newick'></togostanza-gm_roundtree>",
   "stanza:type": "Stanza",
   "stanza:context": "",
   "stanza:display": "",
