@@ -10,7 +10,7 @@ Stanza(function(stanza, params) {
 
     // 'kegg_code - kegg_T_num' SPARQList via KEGG API
     //  将来的にはTogoDB "http://dev.togodb.org/sparql/kegg_gold" を使う？今はSPARQL endpointに不具合あり。遅い。
-    let code_tid_api = "http://keggoc-rdf.dbcls.jp/rest/api/kegg_code_to_tid";
+    let code_tid_api = "http://ep.dbcls.jp/sparqlist/api/gms_kegg_code_tid";
     
     let options_json = {
         method: "POST",
