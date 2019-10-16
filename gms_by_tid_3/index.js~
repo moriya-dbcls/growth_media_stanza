@@ -24,37 +24,32 @@ Stanza(function(stanza, params) {
     
     q.then(function(json) {
 
-	let group_count = {};
-	let group_label = {};
-	for(let gm of json.growth_media){
-	    let groups = Object.keys(gm.components_group);
-	    for(let group of groups){
-		if(!group_count[group]){
-		    group_count[group] = 0;
-		    group_label[group] = gm.components_group[group].label;
-		}
-		group_count[group]++;
-	    }
-	}
-	
-	// sort component_group by component count
-	let groups = Object.keys(group_count).map(function(group){ return {uri: group, count: group_count[group], label: group_label[group]}; });
-	let sorted_groups = groups.sort(function(a,b){
+	// sort parent component by child component count
+	let parents = Object.keys(json.parent_count).map(function(x){ return {uri: x, count: json.parent_count[x].count, label: json.parent_count[x].label}; });
+	let sorted_parents = parents.sort(function(a,b){
 	    if(a.count > b.count) return -1;
 	    if(a.count < b.count) return 1;
 	    return 0;
 	});
-	
-	// hash to list 'components_group'
-	for(let gm of json.growth_media){
-	    gm.components_group_list = [];
-	    for(let group of sorted_groups){
-		if(gm.components_group[group.uri]) gm.components_group_list.push({elements: gm.components_group[group.uri].elements});
-		else gm.components_group_list.push({elements: []});
+
+	// sort gm by species count
+	let gms = Object.keys(json.gm_count).map(function(x){ return {uri: x, count: json.gm_count[x].count, label: json.gm_count[x].label};});
+	let sorted_gms = gms.sort(function(a,b){
+	    if(a.count > b.count) return -1;
+	    if(a.count < b.count) return 1;
+	    return 0;
+	});
+	for(let i = 0; i < sorted_gms.length; i++){
+	    let parent_component = [];
+	    for(let j = 0; j < sorted_parents.length; j++){
+		console.log(sorted_gms[i].uri + " " + sorted_parents[j].uri);
+		if(json.gm_component[sorted_gms[i].uri][sorted_parents[j].uri]) parent_component.push(json.gm_component[sorted_gms[i].uri][sorted_parents[j].uri]);
+		else parent_component.push({});
 	    }
+	    sorted_gms[i].component = parent_component;
 	}
 
-//	console.log(json);
+	console.log(sorted_gms);
 	
 	stanza.render({
 	    template: "stanza.html"
@@ -68,10 +63,10 @@ Stanza(function(stanza, params) {
 	    let tr = thead.append("tr");
 	    tr.append("th").attr("class", "header").attr("rowspan", 2).text("Medium");
 	    tr.append("th").attr("class", "header").attr("rowspan", 2).text("Organisms");
-	    tr.append("th").attr("class", "header").attr("colspan", sorted_groups.length).text("Components");
+	    tr.append("th").attr("class", "header").attr("colspan", sorted_parents.length).text("Components");
 	    tr = thead.append("tr");
 	    tr.selectAll(".role_component")
-		.data(sorted_groups)
+		.data(sorted_parents)
 		.enter()
 		.append("th").attr("class", "role_component")
 		.append("a").attr("href", function(d){ return "http://ep.dbcls.jp/sparqlist/api/gmo_component?gmo_id=" + d.uri.replace("http://purl.jp/bio/10/gmo/","");})
@@ -87,7 +82,7 @@ Stanza(function(stanza, params) {
 	    let tbody = table.append("tbody");
 
 	    tr = tbody.selectAll(".organism_line")
-		.data(json.growth_media)
+		.data(sorted_gms)
 		.enter()
 		.append("tr").attr("class", "organism_line");
 	    tr.append("td").attr("class", "medium")
@@ -103,26 +98,26 @@ Stanza(function(stanza, params) {
 		});
 	    tr.append("td")
 		.attr("class", "organism")
-		.text(function(d){ return d.species.map(x => x.tid).join(" ,"); })
+		.text(function(d){ return json.gm_sp[d.uri].species.map(x => x.tid).join(" ,"); })
 		.on("mouseover", function(d){
 		    renderDiv.select("#popup")
 			.style("left", (mouseX + 10) + "px").style("top", (mouseY - 10) + "px").style("display", "block")
-			.text(d.species.map(x => x.label).join(", "));
+			.text(json.gm_sp[d.uri].species.map(x => x.label).join(", "));
 		})
 		.on("mouseout", function(d){
 		    renderDiv.select("#popup").style("display", "none");
 		});
 
 	    let td = tr.selectAll(".component")
-		.data(function(d){ return d.components_group_list; })
+		.data(function(d){ return d.component })
 		.enter()
 		.append("td").attr("class", "component")
-	    	.filter(function(d){ return d.elements[0];})
+	    	.filter(function(d){ return d[0];})
 		.selectAll(".medium_list")
-		.data(function(d){ return d.elements })
+		.data(function(d){ return d })
 		.enter()
 		.append("a").attr("class", "medium_list")
-		.attr("href", function(d){ return "http://ep.dbcls.jp/sparqlist/api/growth_medium?gm_id=" + d.component.uri.replace("http://purl.jp/bio/10/gmo/","");})
+		.attr("href", function(d){ return "http://ep.dbcls.jp/sparqlist/api/growth_medium?gm_id=" + d.component.id;})
 	    	.append("div").attr("class", "entypo-db-shape component_style")
 		.on("mouseover", function(d){
 		    renderDiv.select("#popup")
