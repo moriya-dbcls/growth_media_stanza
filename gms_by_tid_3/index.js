@@ -64,6 +64,8 @@ Stanza(function(stanza, params) {
 	    let renderDiv = d3.select(stanza.select("#table_area"));
 	    let table = renderDiv.append("table");
 	    let popup = renderDiv.append("div").attr("id", "popup").style("display", "none").style("position", "absolute").style("padding", "10px").style("background-color", "rgba(255,255,255,0.75)").style("border", "solid 2px #888888").style("max-width", "300px");
+
+	    // thead
 	    let thead = table.append("thead");
 	    let tr = thead.append("tr");
 	    tr.append("th").attr("class", "header").attr("rowspan", 2).text("Medium");
@@ -84,8 +86,9 @@ Stanza(function(stanza, params) {
 		.on("mouseout", function(d){
 		    renderDiv.select("#popup").style("display", "none");
 		});
-	    let tbody = table.append("tbody");
 
+	    // tbody
+	    let tbody = table.append("tbody");
 	    tr = tbody.selectAll(".organism_line")
 		.data(json.growth_media)
 		.enter()
@@ -131,7 +134,20 @@ Stanza(function(stanza, params) {
 		})		    
 		.on("mouseout", function(d){
 		    renderDiv.select("#popup").style("display", "none");
-		}); 
+		});
+
+	    // tfoot
+	    let tfoot = table.append("tfoot");
+	    tr = tfoot.append("tr");
+	    tr.append("td");
+	    tr.append("td");
+	    tr.selectAll(".component_label")
+		.data(sorted_groups)
+		.enter()
+		.append("td")
+		.attr("class", "component_label")
+		.append("p")
+		.text(function(d){ return d.label; });
 	}
 	
 	let mouseX = 0;

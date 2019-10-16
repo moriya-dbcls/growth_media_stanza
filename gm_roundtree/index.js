@@ -77,7 +77,7 @@ Stanza(function(stanza, params) {
 
 	// make T_num list for 'gms_by_tid' stanza
 	let mkLeafList = function(json){
-	    if(json.type && json.type == "leaf") return [code2tnum[json.name]];
+	    if(json.type && json.type == "leaf") return [code2tnum[json.name].tid];
 	    else if(json.children){
 		let array = [];
 		for(let i = 0; i < json.children.length; i++){
@@ -108,6 +108,7 @@ Stanza(function(stanza, params) {
 	    .attr("id", "roundtree")
 	    .attr("width", r * 2)
 	    .attr("height", r * 2);
+	let popup = renderDiv.append("div").attr("id", "popup").style("display", "none").style("position", "absolute").style("padding", "10px").style("background-color", "rgba(255,255,255,0.75)").style("border", "solid 2px #888888").style("max-width", "300px");
 	let g = svg.append("g")
 	    .attr("transform", "translate(" + r + "," + r + ")");
 
@@ -145,7 +146,16 @@ Stanza(function(stanza, params) {
 	    .attr("dy", 3)
 	    .style("text-anchor", function(d) { return d.x < 90 || d.x > 270 ? "start" : "end"; })
 	    .attr("transform", function(d) { return d.x < 90 || d.x > 270 ? "translate(8)" : "rotate(180)translate(-8)"; })
-	    .text(function(d) { return d.data.name; });
+	    .text(function(d) { return d.data.name; })
+	    .on("mouseover", function(d){
+                renderDiv.select("#popup")
+                    .style("left", (mouseX + 10) + "px").style("top", (mouseY - 10) + "px").style("display", "block")
+                    .text(code2tnum[d.data.name].label);
+            })
+            .on("mouseout", function(d){
+                renderDiv.select("#popup").style("display", "none");
+            });
+		
 
 	svg.selectAll(".branchNode")
 	    .on("click", function(d){
@@ -255,6 +265,12 @@ Stanza(function(stanza, params) {
 	    .attr("type", "button")
 	    .attr("value", "png")
 	    .on("click", function(){ downloadImg("png"); });
-
+	
+        let mouseX = 0;
+        let mouseY = 0;
+        document.body.addEventListener("mousemove", function(e){
+            mouseX = e.pageX
+            mouseY= e.pageY;
+        });
     });
 });
