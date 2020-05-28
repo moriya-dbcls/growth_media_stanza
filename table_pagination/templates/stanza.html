@@ -1,0 +1,93 @@
+<style>
+@import url('https://use.fontawesome.com/releases/v5.13.0/css/all.css');
+div.main {
+      font-family: "Arial",san-serif;
+}
+div#paginationTop, div#paginationBottom {
+    text-align: {{button_align}};
+    clear: both;
+}
+div.page_slider_div {
+    width: 100%;
+    background-color: #dddddd;
+    height: 20px;
+    margin: 10px 0px 20px 0px;
+    text-align: left;
+}
+ul {
+    padding: 0px;
+    display: inline-block;
+    padding: 0px 20px 0px 20px;
+}
+ul.page_slider_knob_ul {
+    margin: 0px;
+}
+li.page_slider_knob, li.page_button {
+    background-color: #b6c769;
+    color: #ffffff;
+    text-align: center;
+    height: 20px;
+    padding-left: 14px;
+    padding-right: 14px;
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+}
+li.current_button, li.onmouse_button{
+    background-color: #7b8a38;
+}
+li.inactive_button{
+    background-color: #cccccc;
+}
+li.current_page_button, li.page_slider_knob, li.inactive_button{
+    cursor: default;
+}
+li.page_slider_knob {
+    float: left;
+    border-radius: 10px;
+}
+li.page_button {
+    display : table-cell;
+    vertical-align: middle;
+}
+li.prev_button {
+    transform: translate(-10px);
+    border-radius: 10px;  
+}
+li.next_button {
+    transform: translate(10px);
+    border-radius: 10px;
+}
+li.first_button {
+    transform: translate(-20px);
+    border-radius: 10px;  
+}
+li.last_button{
+    transform: translate(20px);
+    border-radius: 10px;
+}
+li.page_button_left {
+    padding-left: 24px;
+    border-radius: 10px 0px 0px 10px;
+}
+li.page_button_right {
+    padding-right: 24px;
+    border-radius: 0px 10px 10px 0px;
+}
+div.float_left {
+    float: left;
+}
+div.float_right {
+    float: right;
+}
+</style>
+<link rel="stylesheet" href='https://use.fontawesome.com/releases/v5.13.0/css/all.css'>
+<div class="main">
+  <div id="tableInfo">
+    <div class="float_left">Showing <span id="listStart"></span>..<span id="listEnd"></span> of <span id="totalSize"> entries</span></div>
+    <div class="float_right">Page size: <select id="pageSizeSelect"></select></div>
+  </div>
+  <div id="paginationTop"></div>
+  <div id="tableBody"></div>
+  <div id="paginationBottom"></div>
+</div>
