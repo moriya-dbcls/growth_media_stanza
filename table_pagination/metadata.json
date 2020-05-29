@@ -9,7 +9,7 @@
      {
        "stanza:key": "table_data_count_api",
        "stanza:example": "https://sparql-support.dbcls.jp/rest/api/protein_list?count=1",
-       "stanza:description": "table data api",
+       "stanza:description": "table row count api",
        "stanza:required": true
      },
      {
