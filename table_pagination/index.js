@@ -149,14 +149,17 @@ Stanza(function(stanza, params) {
 		if(page < 1) page = 1;
 		
 		if(params.top_button){
-		    stanza.select("#paginationTop").getElementsByClassName("page_slider_knob")[0].innerHTML = page;
-		    stanza.select("#paginationTop").getElementsByClassName("page_slider_knob_ul")[0].style.transform = "translateX(" + dragX + "px)";
+		    let div = stanza.select("#paginationTop")
+		    div.getElementsByClassName("page_slider_knob")[0].innerHTML = page;
+		    div.getElementsByClassName("page_slider_knob_ul")[0].style.transform = "translateX(" + dragX + "px)";
+		    setSliderRange(div, dragX);
 		}
 		if(params.bottom_button){
-		    stanza.select("#paginationBottom").getElementsByClassName("page_slider_knob")[0].innerHTML = page;
-		    stanza.select("#paginationBottom").getElementsByClassName("page_slider_knob_ul")[0].style.transform = "translateX(" + dragX + "px)";
+		    let div = stanza.select("#paginationBottom");
+		    div.getElementsByClassName("page_slider_knob")[0].innerHTML = page;
+		    div.getElementsByClassName("page_slider_knob_ul")[0].style.transform = "translateX(" + dragX + "px)";
+		    setSliderRange(div, dragX);
 		}
-		setSliderRange(div, dragX);
 	    }
 	};
 	window.onmouseup = (e)=>{
