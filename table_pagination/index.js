@@ -5,7 +5,7 @@ Stanza(function(stanza, params) {
     let limit = page_size_list[0];
     let offset = 0;
     let max = 0;
-    let click_pages = 5;  // max page button (odd number)
+    let click_pages = 5;  // max page button (odd integer)
     let show_pages = click_pages;
     let max__page = 0;
     let current_page = 0;
@@ -18,7 +18,6 @@ Stanza(function(stanza, params) {
     stanza.render({
         template: "stanza.html",
 	parameters: {
-            table_stanza: params.table_stanza,
 	    button_align: params.button_align
         }
     });
