@@ -5,7 +5,8 @@ Stanza(function(stanza, params) {
     let limit = page_size_list[0];
     let offset = 0;
     let max = 0;
-    let click_pages = 5;  // odd number
+    let click_pages = 5;  // max page button (odd number)
+    let show_pages = click_pages;
     let max__page = 0;
     let current_page = 0;
     let knobX = 0;
@@ -65,7 +66,7 @@ Stanza(function(stanza, params) {
 	    if(i != click_pages - 1) div.getElementsByClassName(i + "_button")[0].classList.remove("page_button_right");
 	}
 	max_page = Math.ceil(max / limit);
-	let show_pages = click_pages;
+	show_pages = click_pages;
 	if(click_pages > max_page){
 	    for(let i = max_page; i < click_pages; i++){
 		div.getElementsByClassName(i + "_button")[0].style.display = "none";
@@ -101,6 +102,7 @@ Stanza(function(stanza, params) {
 	    knob.innerHTML = current_page + 1;
 	    knobX = Math.round( (current_page + 1) * (slider.offsetWidth - knob.offsetWidth) / max_page );
 	    knob_ul.style.transform = "translateX(" + knobX + "px)";
+	    setSliderRange(div, knobX);
 	}
 	
 	let bottom = offset + limit;
@@ -109,9 +111,20 @@ Stanza(function(stanza, params) {
     }
 
     let makeSlider = (div) => {
+	let canvas = document.createElement("canvas");
+	canvas.setAttribute("class", "slider_range");
+	div.appendChild(canvas);
+	let slider_range_color = document.createElement("div");
+	slider_range_color.setAttribute("class", "slider_range_color");
+	slider_range_color.innerHTML = "dummy";
+	div.appendChild(slider_range_color);
+	
         let slider = document.createElement("div");
 	slider.setAttribute("class", "page_slider_div")
 	div.appendChild(slider);
+	let slider_bar = document.createElement("div");
+	slider_bar.setAttribute("class", "page_slider_bar")
+	slider.appendChild(slider_bar);
 	let knob_ul = document.createElement("ul");
 	knob_ul.setAttribute("class", "page_slider_knob_ul");
 	slider.appendChild(knob_ul);
@@ -143,6 +156,7 @@ Stanza(function(stanza, params) {
 		    stanza.select("#paginationBottom").getElementsByClassName("page_slider_knob")[0].innerHTML = page;
 		    stanza.select("#paginationBottom").getElementsByClassName("page_slider_knob_ul")[0].style.transform = "translateX(" + dragX + "px)";
 		}
+		setSliderRange(div, dragX);
 	    }
 	};
 	window.onmouseup = (e)=>{
@@ -212,6 +226,26 @@ Stanza(function(stanza, params) {
 	appendButton(ul, "&gt;&gt;", "last");
     };
 
+    let setSliderRange = (div, knobX) => {
+	let slider = div.getElementsByClassName("page_slider_div")[0];
+	let knob = div.getElementsByClassName("page_slider_knob")[0];
+	let canvas = div.getElementsByClassName("slider_range")[0];
+	let canvas_width = slider.offsetWidth;
+	canvas.setAttribute("width", canvas_width);
+	if(canvas.getContext){
+	    let ctx = canvas.getContext('2d');
+	    ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+	    ctx.beginPath();
+	    ctx.moveTo(knobX + knob.offsetWidth - 10, 12);
+	    ctx.lineTo(knobX + 10, 10);
+	    ctx.lineTo((canvas_width / 2) - (div.getElementsByClassName("1_button")[0].offsetWidth * show_pages / 2), 100);
+	    ctx.lineTo((canvas_width / 2) + (div.getElementsByClassName("1_button")[0].offsetWidth * show_pages / 2), 100);
+	    ctx.closePath();
+	    ctx.fillStyle = document.defaultView.getComputedStyle(div.getElementsByClassName("slider_range_color")[0]).backgroundColor;
+	    ctx.fill();
+	}
+    };
+    
     if(params.slider){
 	if(params.top_button) makeSlider(stanza.select("#paginationTop"));
 	if(params.bottom_button) makeSlider(stanza.select("#paginationBottom"));
