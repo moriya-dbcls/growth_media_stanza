@@ -57,7 +57,7 @@
      {
        "stanza:key": "button_align",
        "stanza:example": "center",
-       "stanza:description": "page button align (left, center, right)",
+       "stanza:description": "page button align (left, center, right), when 'slidr' off.",
        "stanza:required": false
      }
   ],

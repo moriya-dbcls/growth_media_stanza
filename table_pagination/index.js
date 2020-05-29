@@ -13,7 +13,7 @@ Stanza(function(stanza, params) {
     let dragF = false;
     let startX = 0;
     let button_display = undefined;
-    if(params.button_align != "center" && params.button_align != "left" && params.button_align != "right") params.button_align = "center";
+    if(params.slider || (params.button_align != "center" && params.button_align != "left" && params.button_align != "right")) params.button_align = "center";
     
     stanza.render({
         template: "stanza.html",
