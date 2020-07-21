@@ -32,9 +32,11 @@ Stanza(function(stanza, params) {
 
     let firstQuery = "SELECT DISTINCT ?label (SAMPLE (?leafs) AS ?leaf) WHERE { <" + params.root + "> <" + params.label + "> ?label . OPTIONAL {?leafs <" + params.subclass + "> ?root . } }";
 
+    let cacheData = {};
     let max = 0;
     
     let renderColumn = (json, depth) => {
+	if(json.results.bindings[0].parent && !cacheData[json.results.bindings[0].parent.value]) cacheData[json.results.bindings[0].parent.value] = json;
 	let div = stanza.select("#renderDiv");
 	for(let i = depth; i <= max; i++){
 	    stanza.root.getElementById("column_" + i).remove();
@@ -47,19 +49,25 @@ Stanza(function(stanza, params) {
 	column.appendChild(ul);
 	for(let node of json.results.bindings){
 	    let li = document.createElement("li");
-	    let label = node.label.value;
+	    let label_div = document.createElement("div");
+	    label_div.classList.add("label");
+	    label_div.innerHTML = node.label.value;
+//	    label_div.setAttribute("alt", node.label.value);
+	    let label_in_div = document.createElement("div");
+	    label_in_div.classList.add("label_in");
+	    label_in_div.appendChild(label_div);
+	    li.appendChild(label_in_div);
 	    if(node.leaf){
-		label += " &gt;";
 		li.classList.add("clickable");
 		li.onclick = function(){
 		    for(let child of this.parentNode.childNodes){
 			child.classList.remove("selected");
 		    }
 		    this.classList.add("selected");
-		    fetchReq(makeQuery(node.child.value), renderColumn, depth + 1);
+		    if(cacheData[node.child.value]) renderColumn(cacheData[node.child.value], depth + 1);
+		    else fetchReq(makeQuery(node.child.value), renderColumn, depth + 1);
 		}
 	    }
-	    li.innerHTML = label;
 	    ul.appendChild(li);
 	}
 	div.appendChild(column);
@@ -76,16 +84,21 @@ Stanza(function(stanza, params) {
 	let ul = document.createElement("ul");
 	column.appendChild(ul);
 	let li = document.createElement("li");
-	let label = json.results.bindings[0].label.value;
+	let label_div = document.createElement("div");
+	label_div.classList.add("label");
+	label_div.innerHTML = json.results.bindings[0].label.value;
+//	label_div.setAttribute("alt", json.results.bindings[0].label.value);
+	let label_in_div = document.createElement("div");
+	label_in_div.classList.add("label_in");
+	label_in_div.appendChild(label_div);
+	li.appendChild(label_in_div);
 	if(json.results.bindings[0].leaf){
-	    label += " &gt;";
 	    li.classList.add("clickable");
 	    li.onclick = function(){
 		this.classList.add("selected");
 		fetchReq(makeQuery(params.root), renderColumn, depth + 1);
 	    }
 	}
-	li.innerHTML = label;
 	ul.appendChild(li);
 	stanza.select("#renderDiv").appendChild(column);
     }
