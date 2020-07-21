@@ -1,0 +1,46 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "column_tree_view",
+  "stanza:label": "Column tree view",
+  "stanza:definition": "Column viewer metastanza for tree and DAG structures",
+  "stanza:parameter": [
+      {
+       "stanza:key": "endpoint",
+       "stanza:example": "https://integbio.jp/rdf/sparql",
+       "stanza:description": "endpoint",
+       "stanza:required": true
+     },
+     {
+       "stanza:key": "root",
+       "stanza:example": "http://identifiers.org/taxonomy/131567",
+       "stanza:description": "root node",
+       "stanza:required": true
+     },
+     {
+       "stanza:key": "subclass",
+       "stanza:example": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+       "stanza:description": "target subclass property (default: rdfs:subClassOf)",
+       "stanza:required": false
+     },
+     {
+       "stanza:key": "label",
+       "stanza:example": "http://www.w3.org/2000/01/rdf-schema#label",
+       "stanza:description": "target label property (default: rdfs:label)",
+       "stanza:required": false
+     }
+  ],
+  "stanza:usage": "<togostanza-column_tree_view endpoint='https://integbio.jp/rdf/sparql' root='http://identifiers.org/taxonomy/131567'></togostanza-column_tree_view>",
+  "stanza:type": "MetaStanza",
+  "stanza:context": "",
+  "stanza:display": "",
+  "stanza:provider": "DBCLS",
+  "stanza:license": "CC BY",
+  "stanza:author": "Yuki MORIYA",
+  "stanza:address": "moriya@dbcls.rois.ac.jp",
+  "stanza:contributor": [
+  ],
+  "stanza:created": "2020-07-21",
+  "stanza:updated": "2020-07-21"
+}

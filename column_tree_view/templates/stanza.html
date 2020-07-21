@@ -1,0 +1,30 @@
+<style>
+  div#renderDiv{
+      overflow-x: auto;
+      white-space: nowrap;
+  }
+  div.column {
+      min-width: 300px;
+      max-width: 300px;
+      max-height: 300px;
+      min-height: 300px;
+      display: inline-block;
+     /* float: left; */
+      overflow-y: auto;
+      border: solid 1px #888888;
+  }
+  li {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+  }
+  li.clickable {
+      cursor: pointer;
+  }
+  li.selected {
+      background-color: #dddddd;
+  }
+</style>
+
+<div id="renderDiv"></div>
