@@ -128,14 +128,10 @@ Stanza(function(stanza, params) {
 	    }
 	}
 	// add search action
-	stanza.select("#word_search").onclick = function(){
-	    let string = stanza.select("#label_keywords").value;
-	    if(string.match(/\w{3}/)){
-		fetchReq(searchQueryByBifContains(string), renderSearchResult, false);
-	    }
-	}
 	stanza.select("#pulldown").style.top = stanza.select("#label_keywords").offsetTop + 22 + "px";
 	stanza.select("#pulldown").style.left = stanza.select("#label_keywords").offsetLeft + "px";
+	stanza.select("#word_search").onclick = function(){ startSearch(); };
+	stanza.select("#label_keywords").onkeydown = function(e){ if(e.key == "Enter") startSearch(); };
     }
 
     let renderStartFromSearch = (json) => {
@@ -163,6 +159,9 @@ Stanza(function(stanza, params) {
     }
     
     let renderSearchResult = (json, ) => {
+	clearInterval(searchingTimer);
+	stanza.select("#label_keywords").value = searchString;
+	searchString = false;
 	stanza.select("#pulldown").innerHTML = "";
 	let ul = appendElement("ul", stanza.select("#pulldown"));
 	if(json.results.bindings[0]){
@@ -170,6 +169,7 @@ Stanza(function(stanza, params) {
 		let li = appendElement("li", ul);
 		li.innerHTML = res.label_0.value;
 		li.onclick = function(){
+		    stanza.select("#label_keywords").value = res.label_0.value;
 		    stanza.select("#pulldown").style.display = "none";
 		    fetchReq(getParentsQuery(res.child.value), renderStartFromSearch, false);
 		}
@@ -184,7 +184,26 @@ Stanza(function(stanza, params) {
 	}
 	stanza.select("#pulldown").style.display = "block";
     }
-       
+
+    let searchingTimer;
+    let searchingIndex = 0;
+    let searchString = false;
+    let searching = () => {
+	searchingIndex = (searchingIndex + 1) % 2;
+	if(searchingIndex) stanza.select("#label_keywords").value = searchString + " ...";
+	else stanza.select("#label_keywords").value = searchString;
+    }
+
+    let startSearch = () => {
+	let string = stanza.select("#label_keywords").value;
+	if(string.match(/\w{3}/) && !searchString){
+	    stanza.select("#pulldown").style.display = "none";
+	    searchString = string;
+	    searchingTimer = setInterval(searching, 500);
+	    fetchReq(searchQueryByBifContains(string), renderSearchResult, false);
+	}
+    }
+    
     fetchReq(firstQuery, renderFirst, 0); 
 	
 });
