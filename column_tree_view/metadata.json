@@ -4,7 +4,7 @@
   },
   "@id": "column_tree_view",
   "stanza:label": "Column tree view",
-  "stanza:definition": "Column viewer metastanza for tree and DAG structures",
+  "stanza:definition": "Column viewer metastanza for tree and DAG structures (search: exact match by bif:contains)",
   "stanza:parameter": [
       {
        "stanza:key": "endpoint",
@@ -19,14 +19,20 @@
        "stanza:required": true
      },
      {
+       "stanza:key": "graph",
+       "stanza:example": "http://integbio.jp/rdf/ontology/taxonomy",
+       "stanza:description": "target graph",
+       "stanza:required": false
+     },
+     {
        "stanza:key": "subclass",
-       "stanza:example": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+       "stanza:example": "",
        "stanza:description": "target subclass property (default: rdfs:subClassOf)",
        "stanza:required": false
      },
      {
        "stanza:key": "label",
-       "stanza:example": "http://www.w3.org/2000/01/rdf-schema#label",
+       "stanza:example": "",
        "stanza:description": "target label property (default: rdfs:label)",
        "stanza:required": false
      }

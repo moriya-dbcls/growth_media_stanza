@@ -26,37 +26,67 @@ Stanza(function(stanza, params) {
         }
     };
 
+    let sparqlQuery = {
+	graph: params.graph || "",
+	subclass: params.subclass || "http://www.w3.org/2000/01/rdf-schema#subClassOf", 
+	label: params.label || "http://www.w3.org/2000/01/rdf-schema#label"
+    };
+    if(sparqlQuery.graph) sparqlQuery.graph = " FROM <" + sparqlQuery.graph + ">";
+
+    let firstQuery = "SELECT DISTINCT ?label (SAMPLE (?leafs) AS ?leaf)" + sparqlQuery.graph + " WHERE { <" + params.root + "> <" + sparqlQuery.label + "> ?label . OPTIONAL {?leafs <" + sparqlQuery.subclass + "> ?root . } }";
+    
     let makeQuery = (uri) => {
-	return "SELECT DISTINCT ?parent ?child ?label (SAMPLE (?leafs) AS ?leaf) WHERE { VALUES ?parent { <" + uri + "> } ?child <" + params.subclass + "> ?parent . ?child <" + params.label + "> ?label . OPTIONAL {?leafs <" + params.subclass + "> ?child . } } ORDER BY ?label";
+	return "SELECT DISTINCT ?parent ?child ?label (SAMPLE (?leafs) AS ?leaf)" + sparqlQuery.graph + " WHERE { VALUES ?parent { <" + uri + "> } ?child <" + sparqlQuery.subclass + "> ?parent . ?child <" + sparqlQuery.label + "> ?label . OPTIONAL {?leafs <" + sparqlQuery.subclass + "> ?child . } } ORDER BY ?label";
     }
 
-    let firstQuery = "SELECT DISTINCT ?label (SAMPLE (?leafs) AS ?leaf) WHERE { <" + params.root + "> <" + params.label + "> ?label . OPTIONAL {?leafs <" + params.subclass + "> ?root . } }";
+    let searchQueryByBifContains = (string) => {
+	let words = string.split(/[^\w]+/);
+	let query = "PREFIX bif: <bif:> SELECT DISTINCT ?child ?label_0" + sparqlQuery.graph + " WHERE { VALUES ?root { <" + params.root + "> } ?child <" + sparqlQuery.subclass + ">* ?root .";
+	let i = 0;
+	for(let word of words){
+	    if(word.match(/\w{4}/)){
+		query += " ?child <" + sparqlQuery.label + "> ?label_" + i + " . ?label_" + i + ' bif:contains "' + word + '" .';
+		i++;
+	    }
+	}
+	query += " } ORDER BY ?label";
+	return query;
+    }
+
+    let getParentsQuery = (uri) => {
+	return "SELECT DISTINCT ?parent" + sparqlQuery.graph + " WHERE { <" + uri + "> <" + sparqlQuery.subclass + ">* ?parent . }";
+    }
 
     let cacheData = {};
+    let renderHash = false;
     let max = 0;
+
+    let appendElement = (tag, parent) => {
+	let element = document.createElement(tag);
+	parent.appendChild(element);
+	return element;
+    }
     
     let renderColumn = (json, depth) => {
+	// remove over depth columns
 	if(json.results.bindings[0].parent && !cacheData[json.results.bindings[0].parent.value]) cacheData[json.results.bindings[0].parent.value] = json;
 	let div = stanza.select("#renderDiv");
 	for(let i = depth; i <= max; i++){
 	    stanza.root.getElementById("column_" + i).remove();
 	}
 	max = depth;
-	let column = document.createElement("div");
+	// render new column
+	let column = appendElement("div", div);
+	let ul = appendElement("ul", column);
 	column.classList.add("column");
 	column.setAttribute("id", "column_" + depth);
-	let ul = document.createElement("ul");
-	column.appendChild(ul);
 	for(let node of json.results.bindings){
-	    let li = document.createElement("li");
-	    let label_div = document.createElement("div");
+	    let li = appendElement("li", ul);
+	    let label_inline_div = appendElement("div", li);
+	    let label_div = appendElement("div", label_inline_div);
 	    label_div.classList.add("label");
 	    label_div.innerHTML = node.label.value;
-//	    label_div.setAttribute("alt", node.label.value);
-	    let label_in_div = document.createElement("div");
-	    label_in_div.classList.add("label_in");
-	    label_in_div.appendChild(label_div);
-	    li.appendChild(label_in_div);
+	    label_inline_div.classList.add("label_inline");
 	    if(node.leaf){
 		li.classList.add("clickable");
 		li.onclick = function(){
@@ -68,30 +98,28 @@ Stanza(function(stanza, params) {
 		    else fetchReq(makeQuery(node.child.value), renderColumn, depth + 1);
 		}
 	    }
-	    ul.appendChild(li);
+	    if(renderHash && renderHash[node.child.value]) li.classList.add("selected");
 	}
-	div.appendChild(column);
 	column.scrollIntoView();
+	if(renderHash) renderNextFromSearch(json, depth + 1);
     }
     
     let renderFirst = (json, depth) => {
 	stanza.render({
 	    template: "stanza.html"
 	});
-	let column = document.createElement("div");
+	// render first column
+	let column = appendElement("div", stanza.select("#renderDiv"));
+	let ul = appendElement("ul", column);
+	let li = appendElement("li", ul);
+	let label_inline_div = appendElement("div", li);
+	let label_div = appendElement("div", label_inline_div);
 	column.classList.add("column");
 	column.setAttribute("id", "column_" + depth);
-	let ul = document.createElement("ul");
-	column.appendChild(ul);
-	let li = document.createElement("li");
-	let label_div = document.createElement("div");
 	label_div.classList.add("label");
 	label_div.innerHTML = json.results.bindings[0].label.value;
-//	label_div.setAttribute("alt", json.results.bindings[0].label.value);
-	let label_in_div = document.createElement("div");
-	label_in_div.classList.add("label_in");
-	label_in_div.appendChild(label_div);
-	li.appendChild(label_in_div);
+	label_inline_div.classList.add("label_inline");
+	li.appendChild(label_inline_div);
 	if(json.results.bindings[0].leaf){
 	    li.classList.add("clickable");
 	    li.onclick = function(){
@@ -99,8 +127,62 @@ Stanza(function(stanza, params) {
 		fetchReq(makeQuery(params.root), renderColumn, depth + 1);
 	    }
 	}
-	ul.appendChild(li);
-	stanza.select("#renderDiv").appendChild(column);
+	// add search action
+	stanza.select("#word_search").onclick = function(){
+	    let string = stanza.select("#label_keywords").value;
+	    if(string.match(/\w{3}/)){
+		fetchReq(searchQueryByBifContains(string), renderSearchResult, false);
+	    }
+	}
+	stanza.select("#pulldown").style.top = stanza.select("#label_keywords").offsetTop + 22 + "px";
+	stanza.select("#pulldown").style.left = stanza.select("#label_keywords").offsetLeft + "px";
+    }
+
+    let renderStartFromSearch = (json) => {
+	renderHash = {};
+	for(let node of json.results.bindings){
+	    renderHash[node.parent.value] = true;
+	}
+	if(cacheData[params.root]) renderNextFromSearch(cacheData[params.root], 1);
+	else fetchReq(makeQuery(params.root), renderColumn, 1);
+    }
+
+    let renderNextFromSearch = (json, depth) => {
+	let flag = true;
+	for(let node of json.results.bindings){
+	    if(renderHash[node.child.value] && node.leaf){
+		flag = false;
+		if(cacheData[node.child.value]) renderColumn(cacheData[node.child.value], depth);
+		else fetchReq(makeQuery(node.child.value), renderColumn, depth);
+		break;
+	    }
+	}
+	if(flag){
+	    renderHash = false;
+	}
+    }
+    
+    let renderSearchResult = (json, ) => {
+	stanza.select("#pulldown").innerHTML = "";
+	let ul = appendElement("ul", stanza.select("#pulldown"));
+	if(json.results.bindings[0]){
+	    for(let res of json.results.bindings){
+		let li = appendElement("li", ul);
+		li.innerHTML = res.label_0.value;
+		li.onclick = function(){
+		    stanza.select("#pulldown").style.display = "none";
+		    fetchReq(getParentsQuery(res.child.value), renderStartFromSearch, false);
+		}
+		li.onmouseover = function(){ this.style.backgroundColor = "#cccccc"; };
+		li.onmouseout = function(){ this.style.backgroundColor = ""; };
+	    }
+	}else{
+	    let li = appendElement("li", ul);
+	    li.innerHTML = "no hit";
+	    li.onclick = function(){ stanza.select("#pulldown").style.display = "none"; };
+		
+	}
+	stanza.select("#pulldown").style.display = "block";
     }
        
     fetchReq(firstQuery, renderFirst, 0); 
