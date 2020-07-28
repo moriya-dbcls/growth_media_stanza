@@ -32,16 +32,25 @@ Stanza(function(stanza, params) {
 	label: params.label || "http://www.w3.org/2000/01/rdf-schema#label"
     };
     if(sparqlQuery.graph) sparqlQuery.graph = " FROM <" + sparqlQuery.graph + ">";
-
-    let firstQuery = "SELECT DISTINCT ?label (SAMPLE (?leafs) AS ?leaf)" + sparqlQuery.graph + " WHERE { <" + params.root + "> <" + sparqlQuery.label + "> ?label . OPTIONAL {?leafs <" + sparqlQuery.subclass + "> ?root . } }";
+    if(sparqlQuery.subclass.match(/[^\s]\s+[^\s]/)){
+	let list = [];
+	for(let p of sparqlQuery.subclass.split(/\s+/)){
+	    if(p.match(/^http/)) list.push("<" + p + ">");
+	}
+	sparqlQuery.subclass = "(" + list.join("|") + ")";
+    }else{
+	sparqlQuery.subclass = "<" + sparqlQuery.subclass + ">";
+    }
+    
+    let firstQuery = "SELECT DISTINCT ?label (SAMPLE (?leafs) AS ?leaf)" + sparqlQuery.graph + " WHERE { <" + params.root + "> <" + sparqlQuery.label + "> ?label . OPTIONAL {?leafs " + sparqlQuery.subclass + " ?root . } }";
     
     let makeQuery = (uri) => {
-	return "SELECT DISTINCT ?parent ?child ?label (SAMPLE (?leafs) AS ?leaf)" + sparqlQuery.graph + " WHERE { VALUES ?parent { <" + uri + "> } ?child <" + sparqlQuery.subclass + "> ?parent . ?child <" + sparqlQuery.label + "> ?label . OPTIONAL {?leafs <" + sparqlQuery.subclass + "> ?child . } } ORDER BY ?label";
+	return "SELECT DISTINCT ?parent ?child ?label (SAMPLE (?leafs) AS ?leaf)" + sparqlQuery.graph + " WHERE { VALUES ?parent { <" + uri + "> } ?child " + sparqlQuery.subclass + " ?parent . ?child <" + sparqlQuery.label + "> ?label . OPTIONAL {?leafs " + sparqlQuery.subclass + " ?child . } } ORDER BY ?label";
     }
 
     let searchQueryByBifContains = (string) => {
 	let words = string.split(/[^\w]+/);
-	let query = "PREFIX bif: <bif:> SELECT DISTINCT ?child ?label_0" + sparqlQuery.graph + " WHERE { VALUES ?root { <" + params.root + "> } ?child <" + sparqlQuery.subclass + ">* ?root .";
+	let query = "PREFIX bif: <bif:> SELECT DISTINCT ?child ?label_0" + sparqlQuery.graph + " WHERE { VALUES ?root { <" + params.root + "> } ?child " + sparqlQuery.subclass + "* ?root .";
 	let i = 0;
 	for(let word of words){
 	    if(word.match(/\w{4}/)){
@@ -54,7 +63,7 @@ Stanza(function(stanza, params) {
     }
 
     let getParentsQuery = (uri) => {
-	return "SELECT DISTINCT ?parent" + sparqlQuery.graph + " WHERE { <" + uri + "> <" + sparqlQuery.subclass + ">* ?parent . }";
+	return "SELECT DISTINCT ?parent" + sparqlQuery.graph + " WHERE { <" + uri + "> " + sparqlQuery.subclass + "* ?parent . }";
     }
 
     let cacheData = {};
