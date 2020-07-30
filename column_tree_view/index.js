@@ -96,13 +96,15 @@ Stanza(function(stanza, params) {
 	    label_div.classList.add("label");
 	    label_div.innerHTML = node.label.value;
 	    label_inline_div.classList.add("label_inline");
-	    if(node.leaf){
-		li.classList.add("clickable");
-		li.onclick = function(){
-		    for(let child of this.parentNode.childNodes){
-			child.classList.remove("selected");
-		    }
-		    this.classList.add("selected");
+	    if(node.leaf) li.classList.add("clickable");
+	    else li.classList.add("clickable_sp");
+	    li.onclick = function(){
+		for(let child of this.parentNode.childNodes){
+		    child.classList.remove("selected");
+		}
+		this.classList.add("selected");
+		stanza.select("#dataInfo").innerHTML = node.label.value + "<br>" + node.child.value;
+		if(node.leaf){
 		    if(cacheData[node.child.value]) renderColumn(cacheData[node.child.value], depth + 1);
 		    else fetchReq(makeQuery(node.child.value), renderColumn, depth + 1);
 		}
@@ -133,6 +135,7 @@ Stanza(function(stanza, params) {
 	    li.classList.add("clickable");
 	    li.onclick = function(){
 		this.classList.add("selected");
+		stanza.select("#dataInfo").innerHTML = json.results.bindings[0].label.value + "<br>" + params.root;
 		fetchReq(makeQuery(params.root), renderColumn, depth + 1);
 	    }
 	}
@@ -180,6 +183,7 @@ Stanza(function(stanza, params) {
 		li.onclick = function(){
 		    stanza.select("#label_keywords").value = res.label_0.value;
 		    stanza.select("#pulldown").style.display = "none";
+		    stanza.select("#dataInfo").innerHTML = res.label_0.value + "<br>" + res.child.value;
 		    fetchReq(getParentsQuery(res.child.value), renderStartFromSearch, false);
 		}
 		li.onmouseover = function(){ this.style.backgroundColor = "#cccccc"; };

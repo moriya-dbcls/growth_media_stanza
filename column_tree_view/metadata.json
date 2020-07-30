@@ -27,13 +27,13 @@
      {
        "stanza:key": "subclass",
        "stanza:example": "",
-       "stanza:description": "target subclass property (default: rdfs:subClassOf)",
+       "stanza:description": "target subclass predicate (default: rdfs:subClassOf)",
        "stanza:required": false
      },
      {
        "stanza:key": "label",
        "stanza:example": "",
-       "stanza:description": "target label property (default: rdfs:label)",
+       "stanza:description": "target label predicate (default: rdfs:label)",
        "stanza:required": false
      }
   ],

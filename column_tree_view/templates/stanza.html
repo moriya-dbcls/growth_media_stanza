@@ -43,6 +43,9 @@
       color: #0f6385;
       cursor: pointer;
   }
+  li.clickable_sp {
+      cursor: pointer;
+  }
   li.clickable::after{
       content: '';
       width: 7px;
@@ -61,6 +64,9 @@
   div#header {
       text-align: right;
       margin-bottom: 10px;
+  }
+  div#dataInfo {
+      line-height: 20px;
   }
   div#pulldown {
       position: absolute;
@@ -87,4 +93,5 @@
   <input type="button" id="word_search" value="search">
 </div>
 <div id="renderDiv"></div>
+<div id="dataInfo"></div>
 <div id="pulldown"></div>
