@@ -4,7 +4,7 @@
   },
   "@id": "column_tree_view",
   "stanza:label": "Column tree view",
-  "stanza:definition": "Column viewer metastanza for tree and DAG structures (search: exact match by bif:contains)",
+  "stanza:definition": "Column viewer metastanza for tree and DAG structures.",
   "stanza:parameter": [
       {
        "stanza:key": "endpoint",
@@ -35,7 +35,13 @@
        "stanza:example": "",
        "stanza:description": "target label predicate (default: rdfs:label)",
        "stanza:required": false
-     }
+     },
+      {
+       "stanza:key": "search",
+       "stanza:example": "1",
+       "stanza:description": "search method. 1: regex (default), 2: bif:contains(exact), 3: bif:contains(partial).",
+       "stanza:required": false
+     } 
   ],
   "stanza:usage": "<togostanza-column_tree_view endpoint='https://integbio.jp/rdf/sparql' root='http://identifiers.org/taxonomy/131567'></togostanza-column_tree_view>",
   "stanza:type": "MetaStanza",

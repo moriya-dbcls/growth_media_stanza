@@ -54,7 +54,10 @@ Stanza(function(stanza, params) {
 	let i = 0;
 	for(let word of words){
 	    if(word.match(/\w{4}/)){
-		query += " ?child <" + sparqlQuery.label + "> ?label_" + i + " . ?label_" + i + ' bif:contains "' + word + '" .';
+		query += " ?child <" + sparqlQuery.label + "> ?label_" + i + " .";
+		if(params.search == "2")  query += " ?label_" + i + ' bif:contains "' + word + '" .';
+		else if(params.search == "3") query += " ?label_" + i + ' bif:contains "\'' + word + '*\'" .';
+		else query += " FILTER( REGEX( ?label_" + i + ", '" + word + "', 'i'))"; // default
 		i++;
 	    }
 	}
